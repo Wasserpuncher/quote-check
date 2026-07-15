@@ -1,0 +1,43 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+
+      - name: Test
+        run: python -m pytest -q
+
+      # quote-check is run against its own README. Every quotation in that file
+      # is bound to a local source in ./sources, so this check needs no network
+      # and cannot be flaked by a far-off server. If a quote in the README ever
+      # drifts from the letter it cites, the build goes red -- which is exactly
+      # the point, and the most embarrassing way for this particular tool to be
+      # caught out.
+      - name: Check our own quotations
+        run: python -m quotecheck README.md --no-color
+
+      # The numbers in the README -- the test count, the line count -- are
+      # checked by the twin tool, installed from git. NOT `pip install
+      # readme-check`: that name belongs to an unrelated package on PyPI.
+      - name: Check the numbers in our README
+        run: |
+          pip install git+https://github.com/Wasserpuncher/readme-check
+          readme-check README.md --no-color
