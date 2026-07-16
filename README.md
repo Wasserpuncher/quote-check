@@ -183,6 +183,21 @@ does not execute anything and it does not follow links beyond the ones you named
 but if you would not want those requests made, mark the source `skip` or point it
 at a local copy instead.
 
+## Use it in CI
+
+There is a GitHub Action, so a build can verify every quotation on every push.
+It pins the tool at the moving `@v1` tag and defaults `path` to `README.md`.
+
+```yaml
+- uses: actions/setup-python@v5
+  with:
+    python-version: '3.x'
+- uses: Wasserpuncher/quote-check@v1
+  # with:
+  #   path: README.md
+  #   args: '--timeout 30'
+```
+
 ## License
 
 MIT

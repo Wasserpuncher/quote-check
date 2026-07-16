@@ -1,0 +1,23 @@
+name: 'quote-check'
+description: 'Check that a document''s quotations really appear in the sources they cite'
+branding:
+  icon: 'book-open'
+  color: 'green'
+inputs:
+  path:
+    description: 'Path to the document to check'
+    required: false
+    default: 'README.md'
+  args:
+    description: 'Extra arguments passed to quote-check (e.g. --timeout 30)'
+    required: false
+    default: ''
+runs:
+  using: 'composite'
+  steps:
+    - name: Install quote-check
+      shell: bash
+      run: pip install "git+https://github.com/Wasserpuncher/quote-check@v1"
+    - name: Run quote-check
+      shell: bash
+      run: quote-check "${{ inputs.path }}" ${{ inputs.args }}
